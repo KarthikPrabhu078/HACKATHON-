@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<input id="task" placeholder="Enter task">
+<button id="addBtn">Add</button>
+<ul id="list"></ul>
+<title>Leftover Time Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f7;--paper:#fbfcff;--ink:#1a2140;--mute:#667094;--line:#d5dbea;--accent:#2d4bff;--free:#dff3e9;--freeink:#0f7a5c;--warn:#b8400a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1328;--paper:#171c3a;--ink:#e8ecff;--mute:#9aa4cf;--line:#2c3463;--accent:#8497ff;--free:#12352b;--freeink:#59d3a8;--warn:#ffa56e}}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font:15px/1.45 Figtree,system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+h1,h2{font-family:'Bricolage Grotesque',Figtree,sans-serif;margin:0}
+header{padding:18px 24px;background:var(--paper);border-bottom:2px solid var(--ink)}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+header p{margin:2px 0 0;color:var(--mute);font-size:14px}
+main{max-width:1000px;margin:0 auto;padding:18px 16px 40px;display:grid;gap:18px}
+.panel{background:var(--paper);border:1.5px solid var(--ink);border-radius:6px;padding:16px}
+h2{font-size:19px;margin-bottom:4px}.sub{color:var(--mute);font-size:13.5px;margin:0 0 12px}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--mute);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:8px 9px;border:1.5px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:92px;resize:vertical}
+:is(input,select,textarea,button):focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.g2{grid-template-columns:1fr}}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:90px}
+.btn{padding:8px 13px;border-radius:5px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);font:600 14px Figtree;cursor:pointer;flex:0 0 auto}
+.btn.main{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip{display:inline-flex;gap:6px;align-items:center;border:1.5px solid var(--line);border-left:5px solid var(--c);border-radius:5px;padding:3px 4px 3px 8px;margin:3px 5px 3px 0;font-size:13px}
+.x{background:none;border:0;color:var(--mute);font-size:17px;cursor:pointer;line-height:1}
+.dayrow{display:grid;grid-template-columns:44px 1fr;gap:4px 10px;align-items:center;margin-top:8px}
+.dayrow b{font-size:14px}
+.tl{position:relative;height:26px;background:var(--free);border-radius:4px;overflow:hidden}
+.tl i{position:absolute;top:0;bottom:0;background:var(--c);font:normal 600 10px/26px Figtree;color:#fff;padding-left:4px;overflow:hidden;white-space:nowrap}
+.tl i.fx{background:repeating-linear-gradient(45deg,var(--mute) 0 3px,transparent 3px 6px);opacity:.55}
+.note{grid-column:2;font-size:12.5px;color:var(--mute)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:4px 0 8px}
+.card{border:1.5px solid var(--line);border-radius:6px;padding:9px 11px}.card b{display:block;font:800 22px 'Bricolage Grotesque',sans-serif}.card span{color:var(--mute);font-size:12.5px}
+.tips{margin:8px 0 0;padding-left:18px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{padding:6px 12px;border:1.5px solid var(--line);background:none;border-radius:99px;font:600 13px Figtree;color:var(--mute);cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+table{width:100%;border-collapse:collapse}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{white-space:nowrap;width:140px;font-weight:600;border-left:6px solid var(--c)}
+.t{color:var(--mute);font-size:12.5px;display:block;font-weight:500}
+.empty{color:var(--mute);font-size:14px}
+.banner{display:none;border:2px solid var(--warn);color:var(--warn);background:var(--paper);border-radius:6px;padding:10px 14px;font-weight:600}
+.bar{height:10px;background:var(--line);border-radius:9px;overflow:hidden;margin:6px 0 10px}.bar i{display:block;height:100%;background:var(--freeink)}
+.chk{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);margin:0;font-size:14px;color:var(--ink)}.chk input{width:auto}
+.chk.done span{text-decoration:line-through;color:var(--mute)}.chk.miss span{color:var(--warn)}
+</style>
+</head>
+<body>
+<header><h1>Leftover Time Planner</h1><p>Step 1: enter your school timetable. Step 2: see your free time. Step 3: get your study timetable for after you reach home.</p></header>
+<main>
+<div class="banner" id="ban" role="alert"></div>
+<section class="panel"><h2>Today</h2><div id="today"></div></section>
+<section class="panel">
+  <h2>1. Your school timetable</h2><p class="sub">Add each class or lab, or paste your timetable as text.</p>
+  <div class="g2"><div>
+    <div class="row"><div><label for="d">Day</label><select id="d"></select></div><div style="flex:2"><label for="n">Subject</label><input id="n" placeholder="e.g. Maths"></div></div>
+    <div class="row"><div><label for="s">Starts</label><input id="s" type="time" value="09:00"></div><div><label for="e">Ends</label><input id="e" type="time" value="10:00"></div>
+    <button class="btn main" style="align-self:end" onclick="add()">Add class</button></div>
+    <label for="paste">Or paste text, one class per line</label>
+    <textarea id="paste" placeholder="Mon 9:00-10:00 Maths&#10;Tue 10:30am-12:00pm Physics"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" onclick="readPaste()">Read pasted text</button><button class="btn" onclick="sample()">Use a sample timetable</button></div>
+  </div><div id="list"></div></div>
+  <div class="row" style="margin-top:12px">
+    <div><label for="wake">Wake up</label><input id="wake" type="time"></div><div><label for="sleep">Sleep</label><input id="sleep" type="time"></div>
+    <div><label for="travelTo">Travel to school (min)</label><input id="travelTo" type="number" min="0" step="5"></div><div><label for="travel">Travel home (min)</label><input id="travel" type="number" min="0" step="5"></div><div><label for="cap">Study hours per day</label><input id="cap" type="number" min="1" max="10" step="0.5"></div>
+    <div><label for="block">Study block (min)</label><select id="block"><option>45</option><option>60</option><option>90</option><option>120</option></select></div>
+  </div>
+</section>
+<section class="panel"><h2>Exam timetable</h2><p class="sub">Add each exam. Subjects with an exam in the next 14 days get more study time.</p>
+  <div class="row"><div style="flex:2"><label for="xn">Subject</label><input id="xn" list="sl" placeholder="e.g. Maths"></div><div><label for="xd">Date</label><input id="xd" type="date"></div><div><label for="xs">Starts</label><input id="xs" type="time" value="09:30"></div><div><label for="xe">Ends</label><input id="xe" type="time" value="12:30"></div><button class="btn main" style="align-self:end" onclick="addX()">Add exam</button></div>
+  <datalist id="sl"></datalist><div id="xl" style="margin-top:8px"></div>
+  <h2 style="margin-top:16px">Which subjects need more time?</h2><p class="sub">Study time is shared out by this choice, by upcoming exams, and by anything you left out.</p><div id="pri"></div></section>
+<section class="panel"><h2>2. Analysis of your week</h2><p class="sub">Green is time left out after classes, meals, and travel. Colored bars are classes.</p><div id="an"></div></section>
+<section class="panel"><h2>3. Your study timetable after school</h2><div class="tabs" id="tabs"></div><div id="plan"></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),D=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],COL=['#2d6bff','#e0457b','#13a37f','#e08a00','#8a4fe0','#0aa0c8','#c2410c','#4d7c0f'];
+const TC={class:'#2d6bff',study:'#2d4bff',meal:'#e08a00',travel:'#667094',free:'#13a37f',break:'#98a1c4',rest:'#8a4fe0',exam:'#c2410c'};
+let S=ld()||{classes:[],p:{wake:'06:30',sleep:'23:00',travel:30,travelTo:30,cap:4,block:90}},sel=(new Date().getDay()+6)%7;S.exams=S.exams||[];S.pri=S.pri||{};S.done=S.done||{};S.al=S.al||{};S.start=S.start||iso(new Date());S.p.travelTo=S.p.travelTo??30;
+function ld(){try{return JSON.parse(localStorage.getItem('lop'))}catch(e){return null}}
+function sv(){try{localStorage.setItem('lop',JSON.stringify(S))}catch(e){}}
+const m=t=>{const[h,x]=t.split(':').map(Number);return h*60+x};
+const fm=v=>{const h=Math.floor(v/60)%24,x=v%60;return(h%12||12)+':'+String(x).padStart(2,'0')+(h<12?' AM':' PM')};
+const dur=v=>Math.floor(v/60)+'h'+(v%60?' '+v%60+'m':'');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const subs=()=>[...new Set([...S.classes.map(c=>c.name),...S.exams.map(x=>x.name)])];
+const colr=n=>COL[Math.max(0,subs().indexOf(n))%COL.length];
+$('#d').innerHTML=D.map((d,i)=>`<option value="${i}">${d}</option>`).join('');
+['wake','sleep','travelTo','travel','cap','block'].forEach(k=>{const el=$('#'+k);el.value=S.p[k];el.onchange=()=>{S.p[k]=k==='wake'||k==='sleep'?el.value:+el.value;sv();render()}});
+
+function add(){const n=$('#n').value.trim(),s=m($('#s').value||'0:0'),e=m($('#e').value||'0:0');
+  if(!n||e<=s){alert('Enter a subject, and make sure the end time is after the start time.');return}
+  S.classes.push({day:+$('#d').value,name:n,s,e});$('#n').value='';sv();render()}
+function tm(h,x,ap){h=+h;x=+x;if(ap){ap=ap.toLowerCase();if(ap==='pm'&&h<12)h+=12;if(ap==='am'&&h===12)h=0}return h*60+x}
+function readPaste(){let n=0,bad=0;
+  $('#paste').value.split('\n').forEach(l=>{l=l.trim();if(!l)return;
+    const r=l.match(/^(mon|tue|wed|thu|fri|sat|sun)[a-z]*[\s,:-]+(\d{1,2})[:.](\d{2})\s*(am|pm)?\s*(?:-|–|to)\s*(\d{1,2})[:.](\d{2})\s*(am|pm)?[\s,:-]+(.+)$/i);
+    if(!r){bad++;return}
+    const s=tm(r[2],r[3],r[4]||r[7]&&(+r[2]<=+r[5]||!r[4]?r[7]:r[4])),e=tm(r[5],r[6],r[7]);
+    if(e<=s){bad++;return}
+    S.classes.push({day:D.findIndex(d=>d.toLowerCase()===r[1].toLowerCase()),name:r[8].trim(),s,e});n++});
+  if(bad)alert(bad+' line(s) could not be read. Use the format: Mon 9:00-10:00 Maths');
+  if(n)$('#paste').value='';sv();render()}
+function sample(){const c=(day,name,a,b)=>({day,name,s:m(a),e:m(b)});
+  S.classes=[0,2,4].map(d=>c(d,'Maths','09:00','10:00')).concat([0,3].map(d=>c(d,'Physics','10:15','11:15')),[1,3].map(d=>c(d,'English','09:00','10:00')),
+  [1,4].map(d=>c(d,'Chemistry','10:15','11:15')),[0,1,2,3,4].map(d=>c(d,'Computer Science','12:00','13:00')),[2].map(d=>c(d,'Chemistry Lab','13:30','16:00')),[4].map(d=>c(d,'Physics Lab','13:30','15:30')),[0,1,3].map(d=>c(d,'History','14:00','15:00'))).flat();sv();render()}
+function del(i){S.classes.splice(i,1);sv();render()}
+
+/* ---- exams, priorities, tracking, reminders ---- */
+function iso(x){return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
+function dateFor(d){const t=new Date();t.setHours(0,0,0,0);t.setDate(t.getDate()+(d-(t.getDay()+6)%7+7)%7);return t}
+const sname=l=>l.replace(/^[^:]+: /,'');
+function weights(dt,nb){const w={},b=nb?{}:missed();subs().forEach(s=>{let v=[1,2,3.5][+S.pri[s]||0];
+  S.exams.forEach(x=>{if(x.name===s){const k=Math.round((new Date(x.date+'T00:00')-dt)/864e5);if(k>=0&&k<=14)v+=3*(15-k)/15}});
+  w[s]=v+Math.min(2,(b[s]||0)/60)});return w}
+function missed(){const o={},t=new Date();t.setHours(0,0,0,0);
+  for(let i=1;i<=7;i++){const x=new Date(t);x.setDate(t.getDate()-i);if(iso(x)<S.start)break;
+    plan((x.getDay()+6)%7,x,true).it.forEach(b=>{if(b.t==='study'&&!S.done[iso(x)+'|'+b.s]){const n=sname(b.l);o[n]=(o[n]||0)+b.e-b.s}})}return o}
+function streak(){let n=0;const t=new Date();t.setHours(0,0,0,0);
+  for(let i=0;i<30;i++){const x=new Date(t);x.setDate(t.getDate()-i);if(iso(x)<S.start)break;
+    const b=plan((x.getDay()+6)%7,x,true).it.filter(y=>y.t==='study'),T=b.reduce((a,y)=>a+y.e-y.s,0),Dn=b.reduce((a,y)=>a+(S.done[iso(x)+'|'+y.s]?y.e-y.s:0),0);
+    if(T&&Dn>=.8*T)n++;else if(i>0)break}return n}
+function side(){$('#sl').innerHTML=subs().map(s=>`<option value="${esc(s)}">`).join('');
+  const t=new Date();t.setHours(0,0,0,0);
+  $('#xl').innerHTML=S.exams.length?S.exams.map((x,i)=>({...x,i})).sort((a,b)=>a.date<b.date?-1:1).map(x=>{const k=Math.round((new Date(x.date+'T00:00')-t)/864e5);
+    return`<span class="chip" style="--c:${colr(x.name)}">${esc(x.name)} ${x.date} ${fm(x.s)}–${fm(x.e)} (${k<0?'over':k===0?'today':'in '+k+' days'})<button class="x" aria-label="Remove exam ${esc(x.name)}" onclick="delX(${x.i})">×</button></span>`}).join(''):'<p class="empty">No exams added yet.</p>';
+  $('#pri').innerHTML=subs().length?subs().map(s=>`<div class="row" style="align-items:center;margin:4px 0"><span style="flex:2">${esc(s)}</span><select aria-label="Time needed for ${esc(s)}" data-s="${esc(s)}" onchange="S.pri[this.dataset.s]=+this.value;sv();render()">${['Normal','More time','Most time'].map((o,i)=>`<option value="${i}"${(S.pri[s]||0)===i?' selected':''}>${o}</option>`).join('')}</select></div>`).join(''):'<p class="empty">Add classes or exams first.</p>'}
+function addX(){const n=$('#xn').value.trim(),d=$('#xd').value,s=m($('#xs').value||'0:0'),e=m($('#xe').value||'0:0');
+  if(!n||!d||e<=s){alert('Enter a subject, a date, and an end time after the start time.');return}
+  S.exams.push({name:n,date:d,s,e});$('#xn').value='';sv();render()}
+function delX(i){S.exams.splice(i,1);sv();render()}
+function tick(k,v){if(v)S.done[k]=1;else delete S.done[k];sv();render()}
+function ping(t,b){if('Notification' in window&&Notification.permission==='granted')new Notification(t,{body:b})}
+function ask(){if(!('Notification' in window)){alert('This browser does not support notifications.');return}Notification.requestPermission().then(()=>topbar())}
+function chk(){if(!S.classes.length)return;const t=new Date(),k=iso(t),n=t.getHours()*60+t.getMinutes();
+  plan((t.getDay()+6)%7).it.filter(x=>x.t==='study').forEach(x=>{const id=k+'|'+x.s;
+    if(n>=x.s&&n<x.s+10&&!S.done[id]&&!S.al['s'+id]){S.al['s'+id]=1;ping('Time to study',x.l+' ('+dur(x.e-x.s)+')')}
+    if(n>=x.e&&!S.done[id]&&!S.al['m'+id]){S.al['m'+id]=1;ping('Left out: '+x.l,'Not marked as done. It will get extra time in your next plans.')}});
+  sv();topbar()}
+function topbar(){const b=$('#ban'),T=$('#today');
+  if(!S.classes.length){b.style.display='none';T.innerHTML='<p class="empty">Add your timetable to get today\'s study plan.</p>';return}
+  const t=new Date(),k=iso(t),n=t.getHours()*60+t.getMinutes(),bl=plan((t.getDay()+6)%7).it.filter(x=>x.t==='study'),ms=missed();
+  bl.forEach(x=>{if(x.e<=n&&!S.done[k+'|'+x.s]){const q=sname(x.l);ms[q]=(ms[q]||0)+x.e-x.s}});
+  const L=Object.entries(ms),tot=L.reduce((a,x)=>a+x[1],0);
+  b.style.display=L.length?'block':'none';
+  b.innerHTML=`Left out: ${dur(tot)} of planned study (${L.map(x=>esc(x[0])+' '+dur(x[1])).join(', ')}). These subjects get extra time in your next plans.`;
+  const pl=bl.reduce((a,x)=>a+x.e-x.s,0),dn=bl.reduce((a,x)=>a+(S.done[k+'|'+x.s]?x.e-x.s:0),0),pc=pl?Math.round(dn/pl*100):0;
+  T.innerHTML=`<p class="sub">${dur(dn)} done of ${dur(pl)} planned today. Streak: ${streak()} day(s) with at least 80% done.</p><div class="bar" role="progressbar" aria-valuenow="${pc}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pc}%"></i></div>`
+   +bl.map(x=>`<label class="chk ${S.done[k+'|'+x.s]?'done':x.e<=n?'miss':''}"><input type="checkbox" ${S.done[k+'|'+x.s]?'checked':''} onchange="tick('${k}|${x.s}',this.checked)"><span>${fm(x.s)}–${fm(x.e)} ${esc(x.l)}</span></label>`).join('')
+   +('Notification' in window&&Notification.permission!=='granted'?'<p><button class="btn" onclick="ask()">Turn on reminders</button></p>':'')}
+setInterval(chk,30000);
+
+/* ---- engine ---- */
+function plan(d,dt,nb){dt=dt||dateFor(d);
+  const P=S.p,wake=m(P.wake),sleep=m(P.sleep),it=[],add=(s,e,t,l)=>{if(e>s)it.push({s,e,t,l})};
+  const cl=S.classes.filter(c=>c.day===d).sort((a,b)=>a.s-b.s);
+  cl.forEach(c=>add(c.s,c.e,'class',c.name));
+  S.exams.filter(x=>x.date===iso(dt)).forEach(x=>add(x.s,x.e,'exam','Exam: '+x.name));
+  if(cl.length&&+P.travelTo>0){const a=Math.max(wake+30,cl[0].s-+P.travelTo);add(a,cl[0].s,'travel','Travel to school')}
+  add(wake,wake+30,'meal','Get ready and breakfast');add(sleep-30,sleep,'rest','Wind down and pack your bag');
+  const fr=(s,n)=>{let c=s;for(const x of it.slice().sort((a,b)=>a.s-b.s)){if(x.e<=c)continue;if(x.s-c>=n)break;c=Math.max(c,x.e)}return c+n<=sleep-30?c:-1};
+  const meal=(t,l)=>{const s=fr(t,45);if(s>=0&&s-t<=120)add(s,s+45,'meal',l)};
+  meal(13*60,'Lunch');
+  if(cl.length){const end=Math.max(...cl.map(c=>c.e)),s=fr(end,+P.travel);if(P.travel>0&&s>=0)add(s,s+ +P.travel,'travel','Travel home');
+    const e2=Math.max(end,...it.filter(x=>x.t==='travel').map(x=>x.e)),s2=fr(e2,20);if(s2>=0)add(s2,s2+20,'meal','Snack and rest')}
+  meal(20*60,'Dinner');
+  const home=cl.length?Math.max(...cl.map(c=>c.e),...it.filter(x=>x.t==='travel'||x.l==='Snack and rest').map(x=>x.e)):wake;
+  const wins=()=>{const o=[];let c=wake;it.slice().sort((a,b)=>a.s-b.s).forEach(x=>{if(x.s>c)o.push([c,x.s]);c=Math.max(c,x.e)});if(sleep>c)o.push([c,sleep]);return o};
+  const W=wins(),freeMin=W.reduce((a,w)=>a+w[1]-w[0],0),longest=Math.max(0,...W.map(w=>w[1]-w[0]));
+  const lw=W.filter(w=>w[1]-w[0]>=90).pop();if(lw){add(lw[1]-60,lw[1],'free','Free time: hobby, friends, relax');lw[1]-=60}
+  const sb=subs(),sbj=sb.length?sb:['Revision'];let rem=Math.round(S.p.cap*60);const wt=weights(dt,nb),ts=sbj.reduce((a,s)=>a+(wt[s]||1),0),tg={},al={},pick=l=>{const s=sbj.slice().sort((a,b)=>tg[b]-al[b]-tg[a]+al[a])[0];al[s]+=l;return s};sbj.forEach(s=>{tg[s]=rem*(wt[s]||1)/ts;al[s]=0});
+  W.forEach(w=>{if(w[1]<=home)return;let t=Math.max(w[0],home);
+    while(w[1]-t>=30){const len=Math.min(+P.block,w[1]-t);
+      if(rem>=30){const sl=Math.min(len,rem);add(t,t+sl,'study',(sl<45?'Quick revision: ':'Study: ')+pick(sl));t+=sl;rem-=sl;
+        if(w[1]-t>=40&&rem>0){add(t,t+10,'break','Short break: water, stretch');t+=10}}
+      else{add(t,w[1],'free','Free time');t=w[1]}}
+    if(w[1]-t>=10)add(t,w[1],'break','Short break')});
+  it.sort((a,b)=>a.s-b.s);
+  return{it,freeMin,longest,wake,sleep,classMin:cl.reduce((a,c)=>a+c.e-c.s,0),first:cl[0]&&cl[0].s,last:cl.length&&Math.max(...cl.map(c=>c.e))}}
+
+/* ---- render ---- */
+function render(){side();topbar();
+  $('#list').innerHTML=S.classes.length?D.map((dn,d)=>{const r=S.classes.map((c,i)=>({...c,i})).filter(c=>c.day===d).sort((a,b)=>a.s-b.s);
+    return r.length?`<div style="margin-bottom:6px"><b>${dn}</b><br>${r.map(c=>`<span class="chip" style="--c:${colr(c.name)}">${esc(c.name)} ${fm(c.s)}–${fm(c.e)}<button class="x" aria-label="Remove ${esc(c.name)}" onclick="del(${c.i})">×</button></span>`).join('')}</div>`:''}).join(''):'<p class="empty">No classes yet. Add one, paste your timetable, or use the sample.</p>';
+  if(!S.classes.length){$('#an').innerHTML='<p class="empty">Enter your school timetable first. Your analysis will appear here.</p>';$('#tabs').innerHTML='';$('#plan').innerHTML='<p class="empty">Your leftover-time timetable will appear here.</p>';return}
+  const P=D.map((_,d)=>plan(d)),tot=P.reduce((a,p)=>a+p.freeMin,0);
+  const sch=P.map((p,d)=>({p,d})).slice(0,5),best=[...P.map((p,d)=>({p,d}))].sort((a,b)=>b.p.freeMin-a.p.freeMin)[0],busy=[...sch].sort((a,b)=>b.p.classMin-a.p.classMin)[0];
+  const long=[...P.map((p,d)=>({p,d}))].sort((a,b)=>b.p.longest-a.p.longest)[0];
+  let h=`<div class="cards"><div class="card"><b>${dur(tot)}</b><span>left out per week</span></div><div class="card"><b>${D[best.d]}</b><span>most free time (${dur(best.p.freeMin)})</span></div><div class="card"><b>${D[busy.d]}</b><span>busiest class day (${dur(busy.p.classMin)})</span></div><div class="card"><b>${dur(long.p.longest)}</b><span>longest free stretch, on ${D[long.d]}</span></div></div>`;
+  h+=P.map((p,d)=>{const r=p.sleep-p.wake,pos=v=>((v-p.wake)/r*100).toFixed(2),seg=p.it.filter(x=>x.t==='class'||x.t==='meal'||x.t==='travel'||x.t==='rest');
+    return`<div class="dayrow"><b>${D[d]}</b><div class="tl" role="img" aria-label="${D[d]} timeline">${seg.map(x=>`<i class="${x.t==='class'?'':'fx'}" style="--c:${x.t==='class'?colr(x.l):'#667094'};left:${pos(x.s)}%;width:${(x.e-x.s)/r*100}%" title="${esc(x.l)} ${fm(x.s)}–${fm(x.e)}">${x.t==='class'?esc(x.l):''}</i>`).join('')}</div>
+    <div class="note">${p.classMin?`Classes ${fm(p.first)}–${fm(p.last)}. `:'No classes. '}Free: ${dur(p.freeMin)}, longest stretch ${dur(p.longest)}.</div></div>`}).join('');
+  const tips=[];if(busy.p.classMin>=300)tips.push(`${D[busy.d]} is your heaviest day. Keep that evening light and study less.`);
+  tips.push(`${D[best.d]} has the most free time. Use it for big projects and exam revision.`);
+  const gaps=sch.filter(x=>x.p.it.some(y=>y.t==='study'&&y.s<(x.p.last||0)));if(gaps.length)tips.push('Gaps between classes on '+gaps.map(x=>D[x.d]).join(', ')+' are used for quick revision.');
+  h+=`<ul class="tips">${tips.map(t=>`<li>${t}</li>`).join('')}</ul>`;$('#an').innerHTML=h;
+  $('#tabs').innerHTML=D.map((d,i)=>`<button class="${i===sel?'on':''}" onclick="sel=${i};render()">${d} ${dateFor(i).getDate()}</button>`).join('');
+  const p=P[sel],st=p.it.filter(x=>x.t==='study').reduce((a,x)=>a+x.e-x.s,0);
+  $('#plan').innerHTML=`<p class="sub">${D[sel]}: ${dur(st)} of study planned after you get home.</p><table>${p.it.map(x=>`<tr><td style="--c:${x.t==='class'?colr(x.l):TC[x.t]}">${fm(x.s)} – ${fm(x.e)}<span class="t">${dur(x.e-x.s)}</span></td><td>${esc(x.l)}${x.t==='class'?'<span class="t">Class</span>':''}</td></tr>`).join('')}<tr><td style="--c:${TC.rest}">${fm(p.sleep)}</td><td>Sleep</td></tr></table>`}
+render();
+</script>
+
+// Import the functions you need from the SDKs you need
+<script>import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyA26GAiRdnsaFhpAqmlI0qYnmgrx-ekcVA",
+  authDomain: "smart-time-table-f9de9.firebaseapp.com",
+  projectId: "smart-time-table-f9de9",
+  storageBucket: "smart-time-table-f9de9.firebasestorage.app",
+  messagingSenderId: "380808033858",
+  appId: "1:380808033858:web:01656b77daff40480bdfdb",
+  measurementId: "G-X9734DC74X"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+</script>
+</body>
+</html>
